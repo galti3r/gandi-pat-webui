@@ -1,0 +1,30 @@
+name: E2E Live
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: e2e-live
+  cancel-in-progress: false
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: bash build.sh
+      - run: cd e2e && npm ci
+      - run: cd e2e && npx playwright install --with-deps chromium
+      - run: cd e2e && npx playwright test
+        env:
+          PAT: ${{ secrets.GANDI_PAT }}
+          DOMAIN: galtier.top
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: e2e-live-results
+          path: e2e/test-results/

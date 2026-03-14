@@ -1,0 +1,85 @@
+#!/bin/bash
+# Pre-push hook: block AI references + audit npm dependencies.
+# Install: git config core.hooksPath .githooks
+
+set -euo pipefail
+
+RED='\033[0;31m'
+YELLOW='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+REMOTE="$1"
+ERRORS=0
+
+# ---------------------------------------------------------------
+# 1. Block AI assistant references in commits
+# ---------------------------------------------------------------
+while read -r LOCAL_SHA _ REMOTE_SHA _; do
+    if [ "$LOCAL_SHA" = "0000000000000000000000000000000000000000" ]; then
+        continue # deleting branch
+    fi
+
+    if [ "$REMOTE_SHA" = "0000000000000000000000000000000000000000" ]; then
+        RANGE="$LOCAL_SHA"
+    else
+        RANGE="$REMOTE_SHA..$LOCAL_SHA"
+    fi
+
+    # Check commit messages, author, committer, and trailers
+    if git log --format="%B %an %ae %cn %ce" "$RANGE" 2>/dev/null | grep -qi -E "claude|anthropic"; then
+        echo -e "${RED}BLOCKED:${NC} found 'claude' or 'anthropic' reference in commit metadata."
+        echo "Check: git log --format='%B %an %ae %cn %ce' $RANGE"
+        exit 1
+    fi
+done
+
+# ---------------------------------------------------------------
+# 2. npm audit — check for known vulnerabilities (high/critical)
+# ---------------------------------------------------------------
+if command -v npm >/dev/null 2>&1; then
+    audit_dir() {
+        local dir="$1"
+        local label="$2"
+
+        if [ ! -f "$dir/package-lock.json" ]; then
+            return 0
+        fi
+
+        echo -e "  Auditing ${label}..."
+
+        # npm audit exits non-zero when vulnerabilities are found
+        local output
+        output=$(cd "$dir" && npm audit --audit-level=low 2>&1) || {
+            local vuln_count
+            vuln_count=$(echo "$output" | grep -ciE "low|moderate|high|critical" || true)
+
+            if [ "$vuln_count" -gt 0 ]; then
+                echo -e "  ${RED}VULN${NC} (${label}):"
+                echo "$output" | grep -iE "^[[:space:]]*(low|moderate|high|critical|Severity:)" | head -10
+                echo ""
+                return 1
+            fi
+        }
+        return 0
+    }
+
+    echo -e "${YELLOW}npm audit:${NC} scanning dependencies..."
+
+    for pkg_dir in . e2e scripts; do
+        if ! audit_dir "$pkg_dir" "$pkg_dir"; then
+            ERRORS=$((ERRORS + 1))
+        fi
+    done
+
+    if [ $ERRORS -gt 0 ]; then
+        echo ""
+        echo -e "${RED}BLOCKED:${NC} $ERRORS package dir(s) with known vulnerabilities."
+        echo "Fix: npm audit fix (in each dir) or skip with: git push --no-verify"
+        exit 1
+    fi
+
+    echo -e "  ${GREEN}No known vulnerabilities found.${NC}"
+fi
+
+exit 0

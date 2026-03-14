@@ -1,0 +1,21 @@
+{
+  "private": true,
+  "name": "gandi-dns-webui",
+  "version": "1.2.0",
+  "description": "Web UI for managing DNS records via the Gandi LiveDNS API",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "bash build.sh",
+    "test": "node --test src/test/*.js",
+    "lint": "eslint src/js/",
+    "lint:fix": "eslint --fix src/js/"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.4",
+    "eslint-plugin-security": "^4.0.0",
+    "globals": "^17.4.0"
+  }
+}

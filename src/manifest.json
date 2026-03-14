@@ -1,0 +1,16 @@
+{
+    "name": "Gandi DNS Manager",
+    "short_name": "DNS Manager",
+    "description": "Manage DNS records via the Gandi LiveDNS API",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0e1117",
+    "theme_color": "#0086c3",
+    "icons": [
+        {
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

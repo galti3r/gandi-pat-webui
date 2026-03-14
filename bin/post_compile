@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Heroku/Koyeb Python buildpack post-compile hook
+# Builds the dist/ directory from src/
+set -euo pipefail
+echo "Building dist/ from src/..."
+bash build.sh
+echo "Build complete."

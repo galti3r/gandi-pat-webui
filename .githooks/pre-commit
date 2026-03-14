@@ -1,0 +1,199 @@
+#!/bin/bash
+# Pre-commit hook: detect secrets, AI references + check outdated dependencies.
+# Install: git config core.hooksPath .githooks
+#
+# Checks:
+# 1. Staged files for patterns that look like secrets
+# 2. Staged content for secret patterns
+# 3. Block AI assistant references in staged files
+# 4. ESLint on staged JS files (zero errors required)
+# 5. npm dependencies are up-to-date (when package files are staged)
+
+set -euo pipefail
+
+RED='\033[0;31m'
+NC='\033[0m'
+
+# Only check staged files (not working tree)
+STAGED=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
+
+if [ -z "$STAGED" ]; then
+    exit 0
+fi
+
+ERRORS=0
+
+# 1. Block .env files (except .env.example)
+for file in $STAGED; do
+    case "$file" in
+        .env|.env.local|.env.*.local)
+            echo -e "${RED}BLOCKED:${NC} $file — environment file with potential secrets"
+            ERRORS=$((ERRORS + 1))
+            ;;
+    esac
+done
+
+# 2. Check staged content for secret patterns
+PATTERNS=(
+    # Generic API keys/tokens (32+ hex or base64 chars after = or :)
+    '[A-Za-z_]*TOKEN[A-Za-z_]*[=:][[:space:]]*[A-Za-z0-9+/=]{32,}'
+    '[A-Za-z_]*SECRET[A-Za-z_]*[=:][[:space:]]*[A-Za-z0-9+/=]{20,}'
+    '[A-Za-z_]*KEY[A-Za-z_]*[=:][[:space:]]*[A-Za-z0-9+/=]{32,}'
+    # Private keys
+    '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----'
+    # Bearer tokens in code
+    'Authorization.*Bearer [A-Za-z0-9._-]{20,}'
+)
+
+for file in $STAGED; do
+    # Skip binary files and known safe patterns
+    case "$file" in
+        *.png|*.jpg|*.svg|*.ico|*.woff*|*.ttf|package-lock.json|*.lock)
+            continue
+            ;;
+    esac
+
+    content=$(git show ":$file" 2>/dev/null || true)
+    if [ -z "$content" ]; then
+        continue
+    fi
+
+    for pattern in "${PATTERNS[@]}"; do
+        matches=$(echo "$content" | grep -nE "$pattern" 2>/dev/null || true)
+        if [ -n "$matches" ]; then
+            echo -e "${RED}POTENTIAL SECRET${NC} in $file:"
+            echo "$matches" | head -3
+            ERRORS=$((ERRORS + 1))
+        fi
+    done
+done
+
+if [ $ERRORS -gt 0 ]; then
+    echo ""
+    echo -e "${RED}Commit blocked:${NC} $ERRORS potential secret(s) detected."
+    echo "If these are false positives, use: git commit --no-verify"
+    exit 1
+fi
+
+# 3. Block AI assistant references in staged files
+for file in $STAGED; do
+    # Block filenames containing AI tool references
+    if echo "$file" | grep -qi -E "claude|anthropic|copilot|cursorrule|windsurf|codeium|\.aider|clinerule|kilocode|roomode|codex\.md|agents\.md"; then
+        echo -e "${RED}BLOCKED:${NC} $file — filename matches AI tool pattern"
+        ERRORS=$((ERRORS + 1))
+        continue
+    fi
+
+    # Block file content with AI attribution patterns
+    # Skip binary files, lock files, and hook files (hooks legitimately contain detection patterns)
+    case "$file" in
+        *.png|*.jpg|*.svg|*.ico|*.woff*|*.ttf|package-lock.json|*.lock|.githooks/*) continue ;;
+    esac
+    content=$(git show ":$file" 2>/dev/null || true)
+    if [ -z "$content" ]; then continue; fi
+    if echo "$content" | grep -qi -E "co-authored-by.*(claude|anthropic|ai assistant)|generated.*(with|by).*(claude|anthropic|ai)"; then
+        echo -e "${RED}BLOCKED:${NC} $file — contains AI attribution pattern"
+        ERRORS=$((ERRORS + 1))
+    fi
+done
+
+if [ $ERRORS -gt 0 ]; then
+    echo ""
+    echo -e "${RED}Commit blocked:${NC} $ERRORS AI reference(s) detected."
+    echo "These files must not be committed. Remove or .gitignore them."
+    exit 1
+fi
+
+# 4. ESLint on staged JS files
+HAS_JS=false
+for file in $STAGED; do
+    case "$file" in
+        src/js/*.js) HAS_JS=true ;;
+    esac
+done
+
+if [ "$HAS_JS" = true ] && command -v npx >/dev/null 2>&1; then
+    JS_FILES=""
+    for file in $STAGED; do
+        case "$file" in
+            src/js/*.js) JS_FILES="$JS_FILES $file" ;;
+        esac
+    done
+    if ! npx eslint --max-warnings 0 $JS_FILES 2>/dev/null; then
+        echo ""
+        echo -e "${RED}Commit blocked:${NC} ESLint errors or warnings found."
+        echo "Run: make lint-fix"
+        exit 1
+    fi
+fi
+
+# 5. Check for outdated npm dependencies
+YELLOW='\033[0;33m'
+
+check_outdated() {
+    local dir="$1"
+    local label="$2"
+
+    if [ ! -f "$dir/package.json" ]; then
+        return
+    fi
+
+    if ! command -v npm >/dev/null 2>&1; then
+        return
+    fi
+
+    # Compare current vs wanted (semver-compatible), not latest (which may be a new major)
+    # npm outdated exits 1 when outdated packages exist, so ignore exit code
+    outdated=$(cd "$dir" && npm outdated --parseable 2>/dev/null || true)
+    if [ -z "$outdated" ]; then
+        return
+    fi
+
+    # Format: path:pkg@current:pkg@wanted:pkg@latest:depended
+    # Only flag lines where current != wanted (fields 2 and 3)
+    needs_update=""
+    while IFS=: read -r _path f_current f_wanted _rest; do
+        cur_ver="${f_current#*@}"
+        want_ver="${f_wanted#*@}"
+        pkg_name="${f_current%@*}"
+        if [ -n "$cur_ver" ] && [ -n "$want_ver" ] && [ "$cur_ver" != "$want_ver" ]; then
+            needs_update="${needs_update}${pkg_name}: ${cur_ver} → ${want_ver}\n"
+        fi
+    done <<< "$outdated"
+
+    if [ -n "$needs_update" ]; then
+        count=$(echo -e "$needs_update" | grep -c . || true)
+        echo -e "${YELLOW}OUTDATED DEPS${NC} ($label): $count package(s) behind wanted version"
+        echo -e "$needs_update" | head -10
+        echo ""
+        echo "Run: cd $dir && npm update"
+        ERRORS=$((ERRORS + 1))
+    fi
+}
+
+# Only check if package files are staged
+HAS_PKG_ROOT=false
+HAS_PKG_E2E=false
+for file in $STAGED; do
+    case "$file" in
+        package.json|package-lock.json) HAS_PKG_ROOT=true ;;
+        e2e/package.json|e2e/package-lock.json) HAS_PKG_E2E=true ;;
+    esac
+done
+
+if [ "$HAS_PKG_ROOT" = true ]; then
+    check_outdated "." "root"
+fi
+
+if [ "$HAS_PKG_E2E" = true ]; then
+    check_outdated "./e2e" "e2e"
+fi
+
+if [ $ERRORS -gt 0 ]; then
+    echo ""
+    echo -e "${RED}Commit blocked:${NC} outdated dependencies detected."
+    echo "Update dependencies before committing, or skip with: git commit --no-verify"
+    exit 1
+fi
+
+exit 0

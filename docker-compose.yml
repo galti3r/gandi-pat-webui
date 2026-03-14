@@ -1,0 +1,29 @@
+# docker-compose.yml — CORS proxy + E2E tests
+# Compatible with podman-compose and docker-compose
+#
+# Usage:
+#   podman-compose up --build
+#   docker compose up --build
+
+services:
+  webserver:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: serve
+    network_mode: host
+
+  e2e:
+    build:
+      context: .
+      dockerfile: Containerfile
+      target: e2e
+    depends_on:
+      - webserver
+    env_file:
+      - .env
+    environment:
+      CONTAINERIZED: "1"
+      BASE_URL: "http://webserver:8000"
+    volumes:
+      - ./test-results:/app/test-results

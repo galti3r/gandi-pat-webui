@@ -1,0 +1,235 @@
+/* ==========================================================================
+   CSS Custom Properties — Dark Theme
+   Gandi DNS Manager
+   ========================================================================== */
+
+:root {
+    /* -- Colors: Backgrounds -------------------------------------------- */
+    --color-bg: #1a1a2e;
+    --color-bg-secondary: #16213e;
+    --color-bg-elevated: #1f2b47;
+    --color-bg-hover: rgba(255, 255, 255, 0.04);
+    --color-bg-active: rgba(255, 255, 255, 0.08);
+    --color-bg-input: #0f1729;
+    --color-bg-overlay: rgba(0, 0, 0, 0.6);
+
+    /* -- Colors: Text --------------------------------------------------- */
+    --color-text: #e0e0e0;
+    --color-text-secondary: #a0a0b0;
+    --color-text-muted: #6c6c80;
+    --color-text-inverse: #1a1a2e;
+
+    /* -- Colors: Borders ------------------------------------------------ */
+    --color-border: #2a2a4a;
+    --color-border-focus: #0086c3;
+    --color-border-subtle: rgba(255, 255, 255, 0.06);
+
+    /* -- Colors: Accent (Gandi Blue) ------------------------------------ */
+    --color-accent: #0086c3;
+    --color-accent-hover: #00a1e6;
+    --color-accent-muted: rgba(0, 134, 195, 0.15);
+    --color-accent-text: #ffffff;
+
+    /* -- Colors: Semantic ----------------------------------------------- */
+    --color-success: #22c55e;
+    --color-success-muted: rgba(34, 197, 94, 0.15);
+    --color-warning: #f59e0b;
+    --color-warning-muted: rgba(245, 158, 11, 0.15);
+    --color-danger: #ef4444;
+    --color-danger-hover: #dc2626;
+    --color-danger-muted: rgba(239, 68, 68, 0.15);
+    --color-info: #0ea5e9;
+    --color-info-muted: rgba(14, 165, 233, 0.15);
+
+    /* -- Colors: DNS Record Type Tags ----------------------------------- */
+    --color-tag-a: #3b82f6;
+    --color-tag-a-bg: rgba(59, 130, 246, 0.15);
+    --color-tag-aaaa: #6366f1;
+    --color-tag-aaaa-bg: rgba(99, 102, 241, 0.15);
+    --color-tag-cname: #8b5cf6;
+    --color-tag-cname-bg: rgba(139, 92, 246, 0.15);
+    --color-tag-mx: #ec4899;
+    --color-tag-mx-bg: rgba(236, 72, 153, 0.15);
+    --color-tag-txt: #f59e0b;
+    --color-tag-txt-bg: rgba(245, 158, 11, 0.15);
+    --color-tag-srv: #10b981;
+    --color-tag-srv-bg: rgba(16, 185, 129, 0.15);
+    --color-tag-caa: #ef4444;
+    --color-tag-caa-bg: rgba(239, 68, 68, 0.15);
+    --color-tag-ns: #06b6d4;
+    --color-tag-ns-bg: rgba(6, 182, 212, 0.15);
+    --color-tag-alias: #a855f7;
+    --color-tag-alias-bg: rgba(168, 85, 247, 0.15);
+    --color-tag-soa: #78716c;
+    --color-tag-soa-bg: rgba(120, 113, 108, 0.15);
+    --color-tag-ds: #d946ef;
+    --color-tag-ds-bg: rgba(217, 70, 239, 0.15);
+    --color-tag-sshfp: #14b8a6;
+    --color-tag-sshfp-bg: rgba(20, 184, 166, 0.15);
+    --color-tag-tlsa: #f97316;
+    --color-tag-tlsa-bg: rgba(249, 115, 22, 0.15);
+    --color-tag-dname: #84cc16;
+    --color-tag-dname-bg: rgba(132, 204, 22, 0.15);
+    --color-tag-ptr: #64748b;
+    --color-tag-ptr-bg: rgba(100, 116, 139, 0.15);
+    --color-tag-default: #94a3b8;
+    --color-tag-default-bg: rgba(148, 163, 184, 0.12);
+
+    /* -- Typography ----------------------------------------------------- */
+    --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    --font-family-mono: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono",
+        "Cascadia Code", Consolas, "DejaVu Sans Mono", monospace;
+
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+    --font-size-xxl: 2rem;
+
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+
+    --line-height-tight: 1.25;
+    --line-height-base: 1.5;
+    --line-height-loose: 1.75;
+
+    /* -- Spacing -------------------------------------------------------- */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+
+    /* -- Layout --------------------------------------------------------- */
+    --layout-sidebar-width: 220px;
+    --layout-sidebar-collapsed: 60px;
+    --layout-header-height: 56px;
+    --layout-domain-bar-height: 48px;
+    --layout-footer-height: 32px;
+    --layout-max-content-width: 1200px;
+
+    /* -- Border Radius -------------------------------------------------- */
+    --radius-sm: 4px;
+    --radius-base: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-full: 9999px;
+
+    /* -- Transitions ---------------------------------------------------- */
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms ease;
+    --transition-slow: 400ms ease;
+
+    /* -- Shadows -------------------------------------------------------- */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.2);
+    --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+
+    /* -- Z-Index Stack -------------------------------------------------- */
+    --z-base: 1;
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-modal-overlay: 500;
+    --z-modal: 510;
+    --z-toast: 600;
+}
+
+/* ==========================================================================
+   CSS Custom Properties — Light Theme
+   Gandi DNS Manager
+
+   Activated by toggling `theme-light` class on document.body.
+   Overrides color and shadow properties only; typography, spacing, layout,
+   border-radius, transitions, and z-index remain inherited from :root.
+
+   Contrast targets: WCAG AA — 4.5:1 for normal text, 3:1 for large text.
+   ========================================================================== */
+
+body.theme-light {
+    /* -- Colors: Backgrounds -------------------------------------------- */
+    --color-bg: #f5f6f8;
+    --color-bg-secondary: #ffffff;
+    --color-bg-elevated: #ffffff;
+    --color-bg-hover: rgba(0, 0, 0, 0.04);
+    --color-bg-active: rgba(0, 0, 0, 0.06);
+    --color-bg-input: #ffffff;
+    --color-bg-overlay: rgba(255, 255, 255, 0.7);
+
+    /* -- Colors: Text --------------------------------------------------- */
+    /* #1a1a2e on #f5f6f8 = ~14.5:1 contrast */
+    --color-text: #1a1a2e;
+    /* #505068 on #f5f6f8 = ~5.8:1 contrast */
+    --color-text-secondary: #505068;
+    /* #70708a on #ffffff = ~4.6:1 contrast */
+    --color-text-muted: #70708a;
+    --color-text-inverse: #ffffff;
+
+    /* -- Colors: Borders ------------------------------------------------ */
+    --color-border: #d5d7de;
+    --color-border-focus: #0086c3;
+    --color-border-subtle: rgba(0, 0, 0, 0.08);
+
+    /* -- Colors: Accent (Gandi Blue) ------------------------------------ */
+    --color-accent: #0086c3;
+    --color-accent-hover: #006fa3;
+    --color-accent-muted: rgba(0, 134, 195, 0.10);
+    --color-accent-text: #ffffff;
+
+    /* -- Colors: Semantic ----------------------------------------------- */
+    --color-success: #16a34a;
+    --color-success-muted: rgba(22, 163, 74, 0.10);
+    --color-warning: #d97706;
+    --color-warning-muted: rgba(217, 119, 6, 0.10);
+    --color-danger: #dc2626;
+    --color-danger-hover: #b91c1c;
+    --color-danger-muted: rgba(220, 38, 38, 0.08);
+    --color-info: #0284c7;
+    --color-info-muted: rgba(2, 132, 199, 0.08);
+
+    /* -- Colors: DNS Record Type Tags ----------------------------------- */
+    /* Tag text colors are darkened from the dark-theme palette for AA     */
+    /* contrast on light backgrounds. Background tints use 0.10 opacity.   */
+    --color-tag-a: #1d4ed8;
+    --color-tag-a-bg: rgba(59, 130, 246, 0.12);
+    --color-tag-aaaa: #4338ca;
+    --color-tag-aaaa-bg: rgba(99, 102, 241, 0.12);
+    --color-tag-cname: #6d28d9;
+    --color-tag-cname-bg: rgba(139, 92, 246, 0.12);
+    --color-tag-mx: #be185d;
+    --color-tag-mx-bg: rgba(236, 72, 153, 0.12);
+    --color-tag-txt: #b45309;
+    --color-tag-txt-bg: rgba(245, 158, 11, 0.12);
+    --color-tag-srv: #047857;
+    --color-tag-srv-bg: rgba(16, 185, 129, 0.12);
+    --color-tag-caa: #b91c1c;
+    --color-tag-caa-bg: rgba(239, 68, 68, 0.12);
+    --color-tag-ns: #0e7490;
+    --color-tag-ns-bg: rgba(6, 182, 212, 0.12);
+    --color-tag-alias: #7c3aed;
+    --color-tag-alias-bg: rgba(168, 85, 247, 0.12);
+    --color-tag-soa: #57534e;
+    --color-tag-soa-bg: rgba(120, 113, 108, 0.12);
+    --color-tag-ds: #a21caf;
+    --color-tag-ds-bg: rgba(217, 70, 239, 0.12);
+    --color-tag-sshfp: #0f766e;
+    --color-tag-sshfp-bg: rgba(20, 184, 166, 0.12);
+    --color-tag-tlsa: #c2410c;
+    --color-tag-tlsa-bg: rgba(249, 115, 22, 0.12);
+    --color-tag-dname: #4d7c0f;
+    --color-tag-dname-bg: rgba(132, 204, 22, 0.12);
+    --color-tag-ptr: #475569;
+    --color-tag-ptr-bg: rgba(100, 116, 139, 0.12);
+    --color-tag-default: #64748b;
+    --color-tag-default-bg: rgba(100, 116, 139, 0.08);
+
+    /* -- Shadows -------------------------------------------------------- */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
+    --shadow-inset: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+}

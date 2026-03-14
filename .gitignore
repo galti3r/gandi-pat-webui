@@ -1,0 +1,86 @@
+# Build output
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+cors-proxy.log
+
+# Server
+.server.pid
+
+# Dependencies
+node_modules/
+e2e/node_modules/
+scripts/node_modules/
+
+# Test results
+e2e/test-results/
+e2e/playwright-report/
+test-results/
+
+# Temporary
+tmp/
+
+# Internal docs (not published)
+PLAN-*.md
+PROGRESS-*.md
+docs/AUDIT-*.md
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------
+# AI coding assistants — local config only, NEVER committed
+# ---------------------------------------------------------------
+
+# Claude Code
+CLAUDE.md
+.claude/
+
+# GitHub Copilot (personal overrides)
+.github/copilot/settings.local.json
+
+# Cursor
+.cursorrules
+.cursor/
+.cursorignore
+.cursorindexingignore
+
+# Windsurf / Codeium
+.windsurfrules
+.windsurf/
+.codeiumignore
+
+# Aider
+.aider.conf.yml
+
+# Continue.dev
+.continue/
+.continuerc.json
+
+# Roo Code
+.roomodes
+.roo/
+
+# Cline
+.clinerules/
+
+# Kilo Code
+.kilocode/
+.kilocodemodes
+
+# OpenAI Codex
+CODEX.md
+
+# Multi-tool agent standard
+AGENTS.md
+AGENT.md

@@ -1,0 +1,17 @@
+#!/bin/bash
+# Commit-msg hook: block AI assistant references in commit messages.
+# Install: git config core.hooksPath .githooks
+set -euo pipefail
+
+RED='\033[0;31m'
+NC='\033[0m'
+
+MSG_FILE="$1"
+
+if grep -qi -E "claude|anthropic|co-authored-by.*(ai|bot)|generated.*(with|by).*ai|copilot|windsurf|codeium|aider" "$MSG_FILE"; then
+    echo -e "${RED}BLOCKED:${NC} commit message contains AI tool reference."
+    echo "Remove any mention of AI tools from your commit message."
+    exit 1
+fi
+
+exit 0
