@@ -6,6 +6,8 @@ permissions:
   contents: read
   packages: write
   security-events: write
+  attestations: write
+  id-token: write
 jobs:
   docker:
     runs-on: ubuntu-latest
