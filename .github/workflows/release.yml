@@ -60,7 +60,7 @@ jobs:
         with:
           sarif_file: trivy-results.sarif
           category: trivy
-      - uses: anchore/sbom-action@v0.23.1
+      - uses: anchore/sbom-action@v0.24.0
         with:
           image: ghcr.io/${{ github.repository }}:${{ needs.docker.outputs.version }}
           format: spdx-json
