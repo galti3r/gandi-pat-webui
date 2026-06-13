@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "eslint": "^10.0.3",
-    "eslint-plugin-security": "^4.0.0",
+    "eslint-plugin-security": "^4.0.1",
     "globals": "^17.4.0"
   }
 }
